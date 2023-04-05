@@ -24,16 +24,15 @@ public class RequestHandler implements Runnable {
             Request request = Request.getRequest(in);
             DataOutputStream dos = new DataOutputStream(out);
             Response response;
-            //받은 request를 가지고 requestMapping을 해주는 requestController 생성
-            RequestController requestController = new RequestController(request);
+            RequestController requestController = RequestController.getRequestController();
 
             //request가 바로 view와 연결될 수 있을 때
-            if (requestController.isMappingView()) {
+            if (requestController.isMappingView(request)) {
                 logger.debug("request .html");
                 response = new Response("200", request.getPath());
             } else {
                 //리소스 내용 처리하고 최종 url 받아 넘겨줌
-                String url = requestController.getMapping();
+                String url = requestController.getMapping(request);
                 logger.debug("new mapping url : {}", url);
                 response = new Response("200", url);
             }
