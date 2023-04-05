@@ -24,22 +24,25 @@ public class RequestHandler implements Runnable {
                 connection.getPort());
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
-            //입력으로 들어온 내용 전부 request로 보냄
+            //입력으로 들어온 내용을 매개변수로 받아 request 객체 생성
             Request request = new Request(in);
+            DataOutputStream dos = new DataOutputStream(out);
+            Response response;
             //받은 request를 가지고 requestMapping을 해주는 requestController 생성
             RequestController requestController = new RequestController(request);
-            DataOutputStream dos = new DataOutputStream(out);
 
-            //requestcontroller에서 다 처리 후 결론적으로 보여줘야할 뷰 경로를 알려주는게 맞지 않을까,, + 상태코드까지?
+            //request가 바로 view와 연결될 수 있을 때
             if (requestController.isMappingView()) {
-                logger.debug("in static view");
-                Response response = new Response("200", request.getPath());
-                sendResponse(dos, response);
-
+                logger.debug("request .html");
+                response = new Response("200", request.getPath());
             } else {
-                requestController.mapping();
+                //리소스 내용 처리하고 최종 url 받아 넘겨줌
+                String url = requestController.getMapping();
+                logger.debug("new mapping url : {}" , url);
+                response = new Response("200", url);
             }
 
+            sendResponse(dos, response);
 
         } catch (IOException e) {
             logger.error(e.getMessage());
