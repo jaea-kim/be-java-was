@@ -2,13 +2,9 @@ package webserver;
 
 import java.io.*;
 import java.net.Socket;
-import java.nio.file.Files;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import util.HttpParser;
-
-import javax.sql.DataSource;
 
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -25,7 +21,7 @@ public class RequestHandler implements Runnable {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             //입력으로 들어온 내용을 매개변수로 받아 request 객체 생성
-            Request request = new Request(in);
+            Request request = Request.getRequest(in);
             DataOutputStream dos = new DataOutputStream(out);
             Response response;
             //받은 request를 가지고 requestMapping을 해주는 requestController 생성
@@ -38,7 +34,7 @@ public class RequestHandler implements Runnable {
             } else {
                 //리소스 내용 처리하고 최종 url 받아 넘겨줌
                 String url = requestController.getMapping();
-                logger.debug("new mapping url : {}" , url);
+                logger.debug("new mapping url : {}", url);
                 response = new Response("200", url);
             }
 

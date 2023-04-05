@@ -3,12 +3,18 @@ package webserver;
 import util.HttpParser;
 
 public class RequestLine {
-    private String method;
-    private String requestTarget;
+    private static final RequestLine requestLine = new RequestLine();
+    private static String method;
+    private static String requestTarget;
 
-    public RequestLine(String requestLine) {
-        method = HttpParser.getMethodInRequestLine(requestLine);
-        requestTarget = HttpParser.getRequestTargetInRequestLine(requestLine);
+    private RequestLine(){
+    }
+
+    public static RequestLine getRequestLine(String startLine) {
+        method = HttpParser.getMethodInRequestLine(startLine);
+        requestTarget = HttpParser.getRequestTargetInRequestLine(startLine);
+
+        return requestLine;
     }
 
     public String getPath() {
