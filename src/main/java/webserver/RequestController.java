@@ -1,6 +1,6 @@
 package webserver;
 
-import User.UserController;
+import user.UserController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.HttpParser;

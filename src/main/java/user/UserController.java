@@ -1,9 +1,7 @@
-package User;
+package user;
 
-import db.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import webserver.RequestHandler;
 
 import java.util.Map;
 
