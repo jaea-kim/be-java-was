@@ -30,4 +30,8 @@ public class Request {
     public boolean isParam() {
         return requestLine.isParam();
     }
+
+    public String getQueryString() {
+        return requestLine.getQueryString();
+    }
 }

@@ -25,4 +25,8 @@ public class RequestLine {
     public boolean isParam() {
         return requestTarget.contains("?");
     }
+
+    public String getQueryString() {
+        return HttpParser.getQueryString(requestTarget);
+    }
 }
