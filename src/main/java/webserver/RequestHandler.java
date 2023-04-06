@@ -21,7 +21,7 @@ public class RequestHandler implements Runnable {
 
         try (InputStream in = connection.getInputStream(); OutputStream out = connection.getOutputStream()) {
             //입력으로 들어온 내용을 매개변수로 받아 request 객체 생성
-            Request request = Request.getRequest(in);
+            Request request = new Request(in);
             DataOutputStream dos = new DataOutputStream(out);
             Response response;
             RequestController requestController = RequestController.getRequestController();

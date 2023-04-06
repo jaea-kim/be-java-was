@@ -11,17 +11,12 @@ import java.io.InputStreamReader;
 
 public class Request {
     private static final Logger logger = LoggerFactory.getLogger(Request.class);
-    private static final Request request = new Request();
-
     private static RequestLine requestLine;
 
-    private Request() {}
 
-    public static Request getRequest(InputStream in) throws IOException {
+    public Request(InputStream in) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        requestLine = RequestLine.getRequestLine(br.readLine());
-
-        return request;
+        requestLine = new RequestLine(br.readLine());
     }
 
     public String getPath() {
