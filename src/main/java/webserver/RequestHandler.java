@@ -26,15 +26,17 @@ public class RequestHandler implements Runnable {
             Response response;
             RequestController requestController = RequestController.getRequestController();
 
-            //request가 바로 view와 연결될 수 있을 때
+            //정적 데이터 조회
             if (requestController.isMappingView(request)) {
-                logger.debug("request .html");
-                response = new Response("200", request.getPath());
+                logger.debug("request static data");
+                logger.debug("request accept : {}", request.getAccept());
+                response = new Response(200, request.getPath());
             } else {
-                //리소스 내용 처리하고 최종 url 받아 넘겨줌
+                //동적 데이터 조회 및 데이터 전송 상황
                 String url = requestController.getMapping(request);
                 logger.debug("new mapping url : {}", url);
-                response = new Response("200", url);
+                logger.debug("request accept : {}", request.getAccept());
+                response = new Response(200, url);
             }
 
             sendResponse(dos, response);

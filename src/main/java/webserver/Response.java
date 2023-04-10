@@ -5,37 +5,26 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 public class Response {
-    private final String HTTP_VERSION = "HTTP/1.1";
     private final String templatesResourcePath = "src/main/resources/templates";
-    private String statusCode;
+    private final String staticResourcePath = "src/main/resources/static";
+    private StatusCode statusCode;
     private byte[] body;
 
-    public Response(String statusCode, String requestPath) throws IOException {
-        this.statusCode = statusCode;
+    public Response(int code, String requestPath) throws IOException {
+        this.statusCode = StatusCode.getStatusCode(code);
         this.body = Files.readAllBytes(new File(templatesResourcePath + requestPath).toPath());
     }
 
     public String getResponseHeader() {
-        return getStatusLine() + getHeader();
+        return statusCode.getStatusLine() + getHeader();
     }
 
     public byte[] getResponseBody() {
         return body;
     }
 
-    private String getStatusLine() {
-        return HTTP_VERSION +
-                " " +
-                statusCode +
-                " " +
-                getReasonPhrase();
-    }
-
-    private String getReasonPhrase() {
-        if (statusCode.equals("200")) {
-            return "OK";
-        }
-        return "ERROR";
+    private String getOKStatusLine() {
+        return statusCode.getStatusLine();
     }
 
     private String getHeader() {
