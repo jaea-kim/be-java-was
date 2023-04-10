@@ -3,8 +3,8 @@ package webserver;
 import util.HttpParser;
 
 public class RequestLine {
-    private static String method;
-    private static String requestTarget;
+    private String method;
+    private String requestTarget;
 
     public RequestLine(String startLine) {
         method = HttpParser.getMethodInRequestLine(startLine);
