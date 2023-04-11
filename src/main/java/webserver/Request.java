@@ -49,6 +49,6 @@ public class Request {
     }
 
     public String getAccept() {
-        return header.get("Accept");
+        return header.get("Accept").split(",")[0];
     }
 }
