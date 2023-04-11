@@ -47,7 +47,9 @@ public class RequestHandler implements Runnable {
     private void sendResponse(DataOutputStream dos, Response response) throws IOException {
         dos.writeBytes(response.getMessageHeader());
         dos.writeBytes("\r\n");
-        dos.write(response.getMessageBody(), 0, response.getMessageBody().length);
+        if (response.getMessageBody() != null) {
+            dos.write(response.getMessageBody(), 0, response.getMessageBody().length);
+        }
         dos.flush();
     }
 }
