@@ -23,6 +23,10 @@ public class Response {
         } else if (code == 302) {
             statusLine = StatusCode.FOUND.getStatusLine();
             headers = set302Header(requestPath);
+        } else if (code == 404) {
+            statusLine = StatusCode.NOT_FOUND.getStatusLine();
+            body = setMessageBody(accept, requestPath);
+            headers = set200Header(accept, body.length);
         }
     }
 
@@ -30,7 +34,14 @@ public class Response {
         return "Content-Type:" + accept + ";charset=utf-8\r\nContent-Length: " + bodyLength + "\r\n";
     }
 
-    private String set302Header(String url) {
+    private String set302Header(String requestPath) {
+        String url;
+        if (requestPath.startsWith("redirect:")) {
+            int p = requestPath.indexOf(":");
+            url = requestPath.substring(p + 1);
+        } else {
+            url = "/index.html";
+        }
         return "Location: " + url;
     }
 
