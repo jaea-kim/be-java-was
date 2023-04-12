@@ -21,7 +21,11 @@ public class RequestController {
         return RequestControllerHelper.INSTANCE;
     }
 
-    public boolean isMappingView(Request request) {
+    public boolean isRequestGet(Request request) {
+        return request.getMethod().equals("GET");
+    }
+
+    public boolean isRequestStatic(Request request) {
         if (request.getMethod().equals("GET")) {
             return !request.isParam();
         }
@@ -32,11 +36,12 @@ public class RequestController {
         logger.debug("path : {}", request.getPath());
         if (request.getPath().startsWith("/user/create")) {
             UserController userController = UserController.getUserController();
-            Map<String, String> params = HttpParser.getParam(request.getQueryString());
+
+            Map<String, String> params = HttpParser.getParam(request.getBody());
             String url = userController.join(params);
 
             return url;
         }
-        return "/";
+        return "/error.html";
     }
 }
