@@ -9,13 +9,16 @@ import java.util.Map;
 
 public class RequestController {
     private static final Logger logger = LoggerFactory.getLogger(RequestController.class);
-    private static final RequestController requestController = new RequestController();
 
     private RequestController(){
     }
 
+    private static class RequestControllerHelper {
+        private static final RequestController INSTANCE = new RequestController();
+    }
+
     public static RequestController getRequestController() {
-        return requestController;
+        return RequestControllerHelper.INSTANCE;
     }
 
     public boolean isMappingView(Request request) {

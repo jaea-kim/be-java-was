@@ -24,8 +24,9 @@
 * 단위테스트 
 
 ### 3단계
-* Stylesheet 파일을 지원하도록 구현
-* 응답 헤더의 Content-Type을 text/css로 적용
+* HTTP Response + MIME 타입 학습
+* Stylesheet 파일을 지원하도록 구현 -> 응답 헤더의 Content-Type 이용
+  * 요청 헤더의 Accept를 활용 
 
 ## 프로젝트 정보 
 

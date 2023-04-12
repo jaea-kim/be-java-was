@@ -8,20 +8,28 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Request {
     private static final Logger logger = LoggerFactory.getLogger(Request.class);
-    private static final Request request = new Request();
+    private RequestLine requestLine;
+    private Map<String, String> header;
 
-    private static RequestLine requestLine;
-
-    private Request() {}
-
-    public static Request getRequest(InputStream in) throws IOException {
+    public Request(InputStream in) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        requestLine = RequestLine.getRequestLine(br.readLine());
+        requestLine = new RequestLine(br.readLine());
+        header = new HashMap<>();
 
-        return request;
+        String headerString;
+        while (!((headerString = br.readLine()).equals(""))) {
+            initHeader(headerString);
+        }
+    }
+
+    private void initHeader(String headerString) {
+        String[] h = headerString.split(":", 2);
+        header.put(h[0], h[1]);
     }
 
     public String getPath() {
@@ -38,5 +46,9 @@ public class Request {
 
     public String getQueryString() {
         return requestLine.getQueryString();
+    }
+
+    public String getAccept() {
+        return header.get("Accept").split(",")[0];
     }
 }
