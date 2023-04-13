@@ -3,46 +3,38 @@ package webserver;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Response {
     private final String templatesResourcePath = "src/main/resources/templates";
     private final String staticResourcePath = "src/main/resources/static";
     private String statusLine;
-    private String headers;
-    private byte[] body;
+    private Map<String, String> headers = new HashMap<>();
+    private byte[] body = {};
 
-    public Response(int code, String requestPath, String accept) throws IOException {
-        initResponse(code, requestPath, accept);
+    public Response(StatusCode statusCode, String requestPath, String accept) throws IOException {
+        initResponse(statusCode, requestPath, accept);
     }
 
-    private void initResponse(int code, String requestPath, String accept) throws IOException {
-        if (code == 200) {
-            statusLine = StatusCode.OK.getStatusLine();
-            body = setMessageBody(accept, requestPath);
-            headers = set200Header(accept, body.length);
-        } else if (code == 302) {
-            statusLine = StatusCode.FOUND.getStatusLine();
-            headers = set302Header(requestPath);
-        } else if (code == 404) {
-            statusLine = StatusCode.NOT_FOUND.getStatusLine();
-            body = setMessageBody(accept, requestPath);
-            headers = set200Header(accept, body.length);
-        }
-    }
+    private void initResponse(StatusCode statusCode, String requestPath, String accept) throws IOException {
+        statusLine = statusCode.getStatusLine();
 
-    private String set200Header(String accept, int bodyLength) {
-        return "Content-Type:" + accept + ";charset=utf-8\r\nContent-Length: " + bodyLength + "\r\n";
-    }
-
-    private String set302Header(String requestPath) {
-        String url;
         if (requestPath.startsWith("redirect:")) {
-            int p = requestPath.indexOf(":");
-            url = requestPath.substring(p + 1);
+            String path = requestPath.replace("redirect:", "");
+            setHeader("Location", path);
         } else {
-            url = "/index.html";
+            body = setMessageBody(accept, requestPath);
+            setHeader("Content-Type", accept + ";charset=utf-8");
+            setHeader("Content-Length", String.valueOf(body.length));
+
         }
-        return "Location: " + url;
+    }
+
+    public void setHeader(String headerName, String value) {
+        headers.put(headerName, value);
     }
 
     private byte[] setMessageBody(String accept, String requestPath) throws IOException {
@@ -57,7 +49,13 @@ public class Response {
         return body;
     }
 
+    public String getHeaders() {
+        return headers.keySet().stream()
+                .map(key -> key + ": " + headers.get(key))
+                .collect(Collectors.joining("\r\n"));
+    }
+
     public String getMessageHeader() {
-        return statusLine + "\n" + headers;
+        return statusLine + "\r\n" + getHeaders() + "\r\n";
     }
 }

@@ -31,17 +31,17 @@ public class RequestHandler implements Runnable {
                 // 정적 데이터 조회
                 if (requestController.isRequestStatic(request)) {
                     logger.debug("request static data : {}", request.getPath());
-                    response = new Response(200, request.getPath(), request.getAccept());
+                    response = new Response(StatusCode.OK, request.getPath(), request.getAccept());
                 } else {
                     //Todo: 나중에 동적 데이터 조회 필요하면 만들자, 현재는 없는 요청이라서 404 에러페이지 보내기
-                    response = new Response(404, "/error.html", request.getAccept());
+                    response = new Response(StatusCode.NOT_FOUND, "/error.html", request.getAccept());
                 }
-            }
-             else {//데이터 전송 상황
+            } else {
+                 //데이터 전송 상황
                 logger.debug("request data : {}", request.getPath());
                 String url = requestController.getMapping(request);
                 logger.debug("new mapping url : {}", url);
-                response = new Response(302, url, request.getAccept());
+                response = new Response(StatusCode.FOUND, url, request.getAccept());
             }
 
             sendResponse(dos, response);
