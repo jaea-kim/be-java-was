@@ -1,7 +1,6 @@
 package webserver;
 
 import java.util.Arrays;
-import java.util.Map;
 
 public enum StatusCode {
     OK(200, "200 OK"),
