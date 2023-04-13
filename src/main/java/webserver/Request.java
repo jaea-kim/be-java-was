@@ -57,7 +57,7 @@ public class Request {
     }
 
     public String getAccept() {
-        return header.get("Accept").split(",")[0];
+        return header.get("Accept").split(",")[0].trim();
     }
 
     public String getBody() {
