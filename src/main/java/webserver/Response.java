@@ -9,8 +9,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Response {
-    private final String templatesResourcePath = "src/main/resources/templates";
-    private final String staticResourcePath = "src/main/resources/static";
     private String statusLine;
     private Map<String, String> headers = new HashMap<>();
     private byte[] body = {};
@@ -26,8 +24,9 @@ public class Response {
             String path = requestPath.replace("redirect:", "");
             setHeader("Location", path);
         } else {
-            body = setMessageBody(accept, requestPath);
-            setHeader("Content-Type", accept + ";charset=utf-8");
+            ContentType contentType = ContentType.of(requestPath, accept);
+            setHeader("Content-Type", contentType.getMimeTypeString());
+            body = setMessageBody(contentType.getDirectoryPath(), requestPath);
             setHeader("Content-Length", String.valueOf(body.length));
 
         }
@@ -37,12 +36,8 @@ public class Response {
         headers.put(headerName, value);
     }
 
-    private byte[] setMessageBody(String accept, String requestPath) throws IOException {
-        if (accept.contains("html")) {
-            return Files.readAllBytes(new File(templatesResourcePath + requestPath).toPath());
-        } else {
-            return Files.readAllBytes(new File(staticResourcePath + requestPath).toPath());
-        }
+    private byte[] setMessageBody(String directoryPath, String requestPath) throws IOException {
+        return Files.readAllBytes(new File(directoryPath + requestPath).toPath());
     }
 
     public byte[] getMessageBody() {
