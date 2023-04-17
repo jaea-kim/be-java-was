@@ -42,7 +42,7 @@ public class RequestController {
         }
     }
 
-    public String getMapping(Request request) {
+    private String getMapping(Request request) {
         logger.debug("path : {}", request.getPath());
         if (request.getPath().startsWith("/user/create")) {
             UserController userController = UserController.getUserController();
