@@ -26,18 +26,7 @@ public class RequestHandler implements Runnable {
             DataOutputStream dos = new DataOutputStream(out);
             RequestController requestController = RequestController.getRequestController();
 
-            //정적 데이터 조회
-            if (requestController.isMappingView(request)) {
-                logger.debug("request static data : {}", request.getPath());
-                response = new Response(200, request.getPath(), request.getAccept());
-            } else {
-                //동적 데이터 조회 및 데이터 전송 상황
-                logger.debug("request data : {}", request.getPath());
-                String url = requestController.getMapping(request);
-                logger.debug("new mapping url : {}", url);
-                response = new Response(302, url, request.getAccept());
-            }
-
+            response = requestController.process(request);
             sendResponse(dos, response);
         } catch (IOException e) {
             logger.error(e.getMessage());

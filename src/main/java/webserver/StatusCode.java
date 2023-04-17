@@ -1,11 +1,11 @@
 package webserver;
 
 import java.util.Arrays;
-import java.util.Map;
 
 public enum StatusCode {
     OK(200, "200 OK"),
-    FOUND(302, "302 FOUND");
+    FOUND(302, "302 FOUND"),
+    NOT_FOUND(404, "404 NOT FOUND");
 
     private int code;
     private String statusCode;

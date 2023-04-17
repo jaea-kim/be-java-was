@@ -15,6 +15,7 @@ public class Request {
     private static final Logger logger = LoggerFactory.getLogger(Request.class);
     private RequestLine requestLine;
     private Map<String, String> header;
+    private String body;
 
     public Request(InputStream in) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -24,6 +25,13 @@ public class Request {
         String headerString;
         while (!((headerString = br.readLine()).equals(""))) {
             initHeader(headerString);
+        }
+
+        if (header.containsKey("Content-Length")) {
+            int contentLength = Integer.parseInt(header.get("Content-Length").trim());
+            char[] bodyB = new char[contentLength];
+            int length = br.read(bodyB);
+            body = String.valueOf(bodyB);
         }
     }
 
@@ -49,6 +57,10 @@ public class Request {
     }
 
     public String getAccept() {
-        return header.get("Accept").split(",")[0];
+        return header.get("Accept").split(",")[0].trim();
+    }
+
+    public String getBody() {
+        return body;
     }
 }
