@@ -3,6 +3,7 @@ package user;
 import db.Database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import session.Session;
 
 import java.util.Map;
 import java.util.Optional;
@@ -29,11 +30,16 @@ public class UserController {
         return "redirect:/index.html";
     }
 
-    public String login(Map<String, String> params) {
+    public String login(Map<String, String> params, Session session) {
         Optional<User> user = Database.findUserById(params.get("userId"));
+        //form으로 엽력한 아이디 존재 시
         if (user.isPresent()) {
-            //Todo: http 헤더의 쿠키 값 설정, 여기서 하는게 맞을까?
-            return "redirect:/index.html";
+            //비밀번호 일치 시 redirect
+            if (user.get().getPassword().equals(params.get("password"))) {
+                //세션 생성
+                session.createSessionID();
+                return "redirect:/index.html";
+            }
         }
         return "/user/login_failed.html";
     }
