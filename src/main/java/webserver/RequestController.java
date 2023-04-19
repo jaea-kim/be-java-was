@@ -1,5 +1,6 @@
 package webserver;
 
+import session.Session;
 import user.UserController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,18 +38,15 @@ public class RequestController {
         } else if (request.getMethod().equals("POST")) {
             //POST 요청 처리
             logger.debug("request data : {}", request.getPath());
-            String url = getMapping(request);
-            logger.debug("new mapping url : {}", url);
-            return new Response(StatusCode.FOUND, url, request.getAccept());
+            return postMapping(request);
         } else {
             //Todo: delete와 put 요청이 필요할 때 만들자, 현재는 없는 요청이라서 404 에러페이지 보내기
             return new Response(StatusCode.NOT_FOUND, "/error.html", request.getAccept());
         }
     }
 
-    private String getMapping(Request request) {
+    private Response postMapping(Request request) throws IOException {
         logger.debug("path : {}", request.getPath());
-        //Todo: 리소스와 컨트롤러 맵핑을 직접 나눌 수 밖에 없을까? 더 좋은 방법이 없는지 고민하기
         String resource = request.getPath();
         if (resource.startsWith("/user")) {
             UserController userController = UserController.getUserController();
@@ -57,13 +55,14 @@ public class RequestController {
             if (resource.startsWith("/create")) {
                 String url = userController.join(params);
 
-                return url;
+                return new Response(StatusCode.FOUND, url, request.getAccept());
             } else if (resource.startsWith("/login")) {
-               String url = userController.login(params);
+                Session session = request.getSession();
+                String url = userController.login(params, session);
 
-               return url;
+                return new Response(StatusCode.FOUND, url, request.getAccept());
             }
         }
-        return "/error.html";
+        return new Response(StatusCode.NOT_FOUND, "/error.html", request.getAccept());
     }
 }
