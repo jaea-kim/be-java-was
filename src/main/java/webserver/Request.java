@@ -2,6 +2,7 @@ package webserver;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import session.Session;
 
 
 import java.io.BufferedReader;
@@ -16,11 +17,13 @@ public class Request {
     private RequestLine requestLine;
     private Map<String, String> header;
     private String body;
+    private Session session;
 
     public Request(InputStream in) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(in));
         requestLine = new RequestLine(br.readLine());
         header = new HashMap<>();
+        session = new Session();
 
         String headerString;
         while (!((headerString = br.readLine()).equals(""))) {
@@ -28,11 +31,29 @@ public class Request {
         }
 
         if (header.containsKey("Content-Length")) {
-            int contentLength = Integer.parseInt(header.get("Content-Length").trim());
-            char[] bodyB = new char[contentLength];
-            int length = br.read(bodyB);
-            body = String.valueOf(bodyB);
+            initBody(br);
         }
+        //쿠키 헤더가 존재하면 쿠키에 저장된 세션 아이디를 가지고 세션 객체 찾기
+        if (header.containsKey("Cookie")) {
+            initSession(header.get("Cookie"));
+        }
+    }
+
+    private void initSession(String cookieHeader) {
+        String[] attributes = cookieHeader.split(" ");
+        for (String attribute : attributes) {
+            if (attribute.startsWith("SID")) {
+                String sid = attribute.replace("SID=", "").trim();
+                session = session.getSession(sid);
+            }
+        }
+    }
+
+    private void initBody(BufferedReader br) throws IOException {
+        int contentLength = Integer.parseInt(header.get("Content-Length").trim());
+        char[] bodyB = new char[contentLength];
+        int length = br.read(bodyB);
+        body = String.valueOf(bodyB);
     }
 
     private void initHeader(String headerString) {
@@ -62,5 +83,9 @@ public class Request {
 
     public String getBody() {
         return body;
+    }
+
+    public Session getSession() {
+        return session;
     }
 }
